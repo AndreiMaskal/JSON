@@ -1,3 +1,7 @@
-import UIKit
+import Foundation
 
-var greeting = "Hello, playground"
+getData(nameCard: "Lotus")
+
+
+
+
