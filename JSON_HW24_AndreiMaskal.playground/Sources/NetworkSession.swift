@@ -1,6 +1,6 @@
 import Foundation
 
-    var sessionConfig: URLSessionConfiguration = {
+var sessionConfig: URLSessionConfiguration = {
     let configuration = URLSessionConfiguration.default
     configuration.allowsCellularAccess = false
     configuration.waitsForConnectivity = false
@@ -9,12 +9,10 @@ import Foundation
     return configuration
 }()
 
+public func getData(url: URL?) {
+    var printingCount = 0
     let session = URLSession(configuration: sessionConfig)
-
-public func getData(nameCard: String) {
-    let urlString = "https://api.magicthegathering.io/v1/cards/?name=\(nameCard)"
     
-    let url = URL(string: urlString)
     guard let url = url else {
         print(NetworkError.badURL.errorInformation)
         return }
@@ -33,23 +31,29 @@ public func getData(nameCard: String) {
         }
         
         guard let data = data,
-            let setCards = try? JSONDecoder().decode(Cards.self, from: data) else {
+              let setCards = try? JSONDecoder().decode(Cards.self, from: data) else {
             print(NetworkError.badJSON.errorInformation)
             return
         }
         
         for card in setCards.cards {
-            print("""
+            if card.name == "Opt" || card.name == "Black Lotus" {
+                print("""
                     Имя карты - \(card.name)
                     Тип карты - \(card.type ?? "")
                     Редкость карты - \(card.rarity ?? "")
                     CMC - \(card.cmc ?? 0)
                     Количество манны - \(card.manaCost ?? "" )
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 """)
-            
+                printingCount += 1
+            } else {
+            }
         }
-
+        print("""
+Количество полученных карт: \(setCards.cards.count)
+Количество отфильтрованных карт \(printingCount)
+""")
     }.resume()
 }
 
